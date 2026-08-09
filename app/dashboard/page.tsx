@@ -86,6 +86,19 @@ export default function Dashboard() {
               </div>
               <div className="flex gap-3 text-sm">
                 <a className="underline text-blue-600" href={inv.payUrl} target="_blank">client pay page ↗</a>
+                <a
+                  className="underline text-emerald-700"
+                  href={`https://wa.me/?text=${encodeURIComponent(inv.chaseMessage || inv.payUrl)}`}
+                  target="_blank"
+                >
+                  send via WhatsApp
+                </a>
+                <a
+                  className="underline"
+                  href={`mailto:${inv.clientEmail}?subject=${encodeURIComponent(`Invoice — ${inv.description}`)}&body=${encodeURIComponent(inv.chaseMessage || inv.payUrl)}`}
+                >
+                  email
+                </a>
                 <button className="underline" onClick={() => setOpen(open === inv.id ? null : inv.id)}>
                   {open === inv.id ? "hide agent activity" : "agent activity"}
                 </button>
