@@ -1,8 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
 import RequireAuth from "@/components/RequireAuth";
 import { useStore } from "@/lib/store";
+
+type GravvAccount = {
+  id: string; label: string; balance: string; currency: string; status: string;
+  network: string; address: string; assets: { symbol: string; balance: string }[];
+};
 
 const CCY_LABEL: Record<string, string> = {
   TND: "Tunisian Dinar",
@@ -15,6 +21,14 @@ export default function Wallet() {
   const { wallet, invoices } = useStore();
   const totalTND = wallet.find((b) => b.currency === "TND")?.amount ?? 0;
   const settledCount = invoices.filter((i) => i.status === "paid").length;
+  const [gravvAccounts, setGravvAccounts] = useState<GravvAccount[]>([]);
+
+  useEffect(() => {
+    fetch("/api/wallet")
+      .then((r) => r.json())
+      .then((j) => setGravvAccounts(j.accounts ?? []))
+      .catch(() => {});
+  }, []);
 
   return (
     <RequireAuth>
@@ -54,11 +68,38 @@ export default function Wallet() {
             ))}
           </div>
 
-          <p className="mt-10 text-xs text-muted leading-relaxed max-w-md">
-            In production this reflects real Gravv wallet balances via its
-            payouts API. Every currency held here can settle to a Tunisian
-            resident account under the current forex rules.
-          </p>
+          {gravvAccounts.length > 0 && (
+            <div className="mt-10">
+              <p className="text-xs uppercase tracking-widest text-muted mb-3">
+                Live Gravv account <span className="text-settled">● connected</span>
+              </p>
+              {gravvAccounts.map((a) => (
+                <div key={a.id} className="rounded-lg border border-white/10 bg-ink-2 px-5 py-4 mb-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-ivory">{a.label}</p>
+                    <span className={`text-xs font-mono-tabular uppercase ${a.status === "active" ? "text-settled" : "text-muted"}`}>
+                      {a.status}
+                    </span>
+                  </div>
+                  <p className="font-mono-tabular text-xl mt-1">
+                    {a.balance} <span className="text-sm text-muted">{a.currency}</span>
+                  </p>
+                  <p className="text-[11px] text-muted mt-2 font-mono-tabular break-all">
+                    {a.network} · {a.address}
+                  </p>
+                  {a.assets.length > 0 && (
+                    <p className="text-[11px] text-muted mt-1 font-mono-tabular">
+                      {a.assets.map((s) => `${s.symbol} ${s.balance}`).join(" · ")}
+                    </p>
+                  )}
+                </div>
+              ))}
+              <p className="text-xs text-muted leading-relaxed max-w-md">
+                This block is a live read of the Gravv sandbox accounts API — the
+                same account the agent settles into. Balances update as transfers land.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </RequireAuth>
