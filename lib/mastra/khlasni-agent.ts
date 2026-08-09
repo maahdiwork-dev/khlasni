@@ -39,7 +39,7 @@ const createTransfer = createTool({
       customer_id: GRAVV_IDS.customerId,
       description: input.description,
       client_reference: input.client_reference,
-    }, `payout-${input.client_reference}`);
+    }, `payout-${input.client_reference}`, 15000);
     toolTraces.push({ call: "POST /v1/transfer", ok: r.ok, detail: r.error ?? undefined });
     return r.ok
       ? { status: "transfer_submitted", data: r.data }
@@ -56,6 +56,8 @@ export const khlasniAgent = new Agent({
     "You are concise, warm, and professional. When settling a paid invoice: " +
     "check transfer rates, then execute the transfer with create_transfer, then report " +
     "what happened in 1-2 sentences (mention the Gravv call result honestly). " +
+    "Never promise actions you cannot take — no automatic retries, no future follow-ups you don't control; " +
+    "state only what happened and what the system will actually do. " +
     "When writing chase messages: max 90 words, include the pay link on its own line, " +
     "sign '— sent by Khlasni on behalf of Sami Trabelsi'.",
   model: anthropic("claude-haiku-4-5-20251001"),

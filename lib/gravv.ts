@@ -14,6 +14,7 @@ export async function gravv<T = unknown>(
   path: string,
   body?: unknown,
   idempotencyKey?: string,
+  timeoutMs = 8000,
 ): Promise<{ ok: boolean; status: number; data: T | null; error: string | null }> {
   try {
     const res = await fetch(`${BASE}${path}`, {
@@ -25,7 +26,7 @@ export async function gravv<T = unknown>(
       },
       body: body ? JSON.stringify(body) : undefined,
       cache: "no-store",
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
     const json = (await res.json().catch(() => ({ data: null, error: `non-JSON ${res.status}` }))) as {
       data: T | null;

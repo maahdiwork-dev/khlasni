@@ -1,3 +1,4 @@
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
 import { saveInvoice, listInvoices, newId, addEvent, type Invoice } from "@/lib/server/store";
 import { composeChaseMessage } from "@/lib/agent";

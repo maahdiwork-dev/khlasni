@@ -1,3 +1,4 @@
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
 import { loadInvoice, saveInvoice, addEvent } from "@/lib/server/store";
 import { sendEmail } from "@/lib/mail";
