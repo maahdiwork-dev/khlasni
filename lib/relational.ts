@@ -3,7 +3,7 @@
 // or fails the main flow — the jsonb store is the runtime source of truth.
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Invoice } from "./store";
+import type { Invoice } from "./server/store";
 
 const g = globalThis as unknown as { __khlasniRelSb?: SupabaseClient | null };
 

@@ -2,7 +2,7 @@
 // every path resolves the invoice even if Mastra or Gravv sandbox refuses.
 
 import { gravvEnabled } from "./gravv";
-import { addEvent, type Invoice } from "./store";
+import { addEvent, type Invoice } from "./server/store";
 import { khlasniAgent, toolTraces } from "./mastra/khlasni-agent";
 
 const hasLLM = () => !!process.env.ANTHROPIC_API_KEY;
