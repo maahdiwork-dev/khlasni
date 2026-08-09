@@ -86,10 +86,7 @@ export default function Login() {
         </form>
 
         <p className="mt-6 text-sm text-muted">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-chase underline">
-            Sign up
-          </Link>
+          Demo build — any credentials open Sami&apos;s account.
         </p>
       </div>
     </div>
