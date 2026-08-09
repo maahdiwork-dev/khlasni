@@ -41,7 +41,7 @@ export async function syncRelational(inv: Invoice): Promise<void> {
     });
     if (inv.chaseMessage) {
       await c.from("khlasni_followups").upsert(
-        { id: undefined, invoice_id: inv.id, level: 1, channel: "email", body: inv.chaseMessage } as never,
+        { invoice_id: inv.id, level: 1, channel: "email", body: inv.chaseMessage },
         { ignoreDuplicates: true, onConflict: "invoice_id,level" },
       );
     }

@@ -46,6 +46,7 @@ export async function saveInvoice(inv: Invoice): Promise<void> {
   if (c) {
     const { error } = await c.from("khlasni_invoices").upsert({ id: inv.id, data: inv });
     if (error) console.error("store.save failed:", error.message);
+    void import("./relational").then((m) => m.syncRelational(inv)).catch(() => {});
   }
 }
 
