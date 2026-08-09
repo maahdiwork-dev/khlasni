@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveInvoice, listInvoices, newId, addEvent, type Invoice } from "@/lib/store";
 import { composeChaseMessage } from "@/lib/agent";
+import { sendEmail } from "@/lib/mail";
 import { GRAVV_IDS } from "@/lib/gravv";
 
 export async function POST(req: NextRequest) {
@@ -30,7 +31,17 @@ export async function POST(req: NextRequest) {
   };
   addEvent(inv, { actor: "system", text: `Invoice created — ${inv.amount} ${inv.currency} for ${inv.clientName}.` });
   inv.chaseMessage = await composeChaseMessage(inv, b.tone);
-  addEvent(inv, { actor: "agent", text: `Payment request drafted and sent to ${inv.clientName}. I'll follow up until it's paid.` });
+  if (inv.clientEmail) {
+    const sent = await sendEmail(inv.clientEmail, `Invoice — ${inv.description}`, inv.chaseMessage);
+    addEvent(inv, {
+      actor: "agent",
+      text: sent
+        ? `Payment request emailed to ${inv.clientEmail}. I'll follow up until it's paid.`
+        : `Email to ${inv.clientEmail} didn't go through — payment request ready to send manually.`,
+    });
+  } else {
+    addEvent(inv, { actor: "agent", text: `Payment request drafted for ${inv.clientName} — send it via WhatsApp from the dashboard.` });
+  }
   await saveInvoice(inv);
   return NextResponse.json(inv);
 }
