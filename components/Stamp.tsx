@@ -6,6 +6,10 @@ const STYLES: Record<ChaseEvent["label"], { color: string; border: string }> = {
   PAID: { color: "text-settled", border: "border-settled" },
 };
 
+// Real agent events carry labels beyond the original three (CREATED, AGENT, INFO…).
+// Unknown labels get a neutral style instead of crashing the page.
+const FALLBACK = { color: "text-muted", border: "border-white/25" };
+
 export default function Stamp({
   label,
   animate = false,
@@ -13,7 +17,7 @@ export default function Stamp({
   label: ChaseEvent["label"];
   animate?: boolean;
 }) {
-  const s = STYLES[label];
+  const s = STYLES[label] ?? FALLBACK;
   return (
     <span
       className={`inline-flex items-center justify-center font-mono-tabular text-[11px] tracking-[0.18em] font-bold uppercase border-2 rounded px-2 py-1 -rotate-6 ${s.color} ${s.border} ${
