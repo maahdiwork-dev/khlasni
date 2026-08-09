@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 type Ev = { at: string; actor: string; text: string; gravv?: { call: string; ok: boolean } };
 type Inv = {
-  id: string; clientName: string; amount: number; currency: string; description: string;
+  id: string; clientName: string; clientEmail?: string; amount: number; currency: string; description: string;
   status: string; chaseMessage: string; payUrl: string; events: Ev[];
 };
 
