@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     events: [],
   };
   addEvent(inv, { actor: "system", text: `Invoice created — ${inv.amount} ${inv.currency} for ${inv.clientName}.` });
-  inv.chaseMessage = await composeChaseMessage(inv, b.tone);
+  inv.chaseMessage = await composeChaseMessage(inv, b.tone, typeof b.brief === "string" ? b.brief.slice(0, 1500) : undefined);
   if (inv.clientEmail) {
     const sent = await sendEmail(inv.clientEmail, `Invoice — ${inv.description}`, inv.chaseMessage);
     addEvent(inv, {

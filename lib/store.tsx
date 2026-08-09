@@ -69,6 +69,7 @@ type Store = {
     jobTitle: string;
     amount: number;
     currency: Invoice["currency"];
+    brief?: string;
   }) => Promise<Invoice>;
   chase: (id: string) => void;
   markPaid: (id: string) => void;
@@ -120,6 +121,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         amount: input.amount,
         currency: input.currency,
         description: input.jobTitle,
+        brief: input.brief || undefined,
       }),
     });
     if (!r.ok) throw new Error("create failed");

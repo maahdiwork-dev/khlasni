@@ -23,13 +23,15 @@ function templateChase(inv: Invoice): string {
   );
 }
 
-export async function composeChaseMessage(inv: Invoice, tone = "friendly"): Promise<string> {
+export async function composeChaseMessage(inv: Invoice, tone = "friendly", brief?: string): Promise<string> {
   if (!hasLLM()) return templateChase(inv);
   try {
     const res = await withTimeout(khlasniAgent.generate(
       `Write the payment-request message for this invoice. Tone: ${tone}. ` +
       `Client: ${inv.clientName}. Work: "${inv.description}". Amount: ${inv.amount} ${inv.currency}. ` +
-      `Pay link: ${inv.payUrl}. Output only the message body — no preamble.`,
+      `Pay link: ${inv.payUrl}. ` +
+      (brief ? `Context the freelancer pasted (contract/thread excerpt — use it to reference specifics like scope, agreed terms, or names, but never invent beyond it): """${brief}""" ` : "") +
+      `Output only the message body — no preamble.`,
     ), 15000);
     return res.text?.trim() || templateChase(inv);
   } catch {

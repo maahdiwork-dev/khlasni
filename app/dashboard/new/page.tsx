@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
 import RequireAuth from "@/components/RequireAuth";
 import { useStore } from "@/lib/store";
@@ -11,6 +11,14 @@ export default function NewInvoice() {
   const router = useRouter();
   const { createInvoice } = useStore();
   const [submitting, setSubmitting] = useState(false);
+  const [knownClients, setKnownClients] = useState<{ name: string; email: string | null }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/clients")
+      .then((r) => r.json())
+      .then((j) => setKnownClients(j.clients ?? []))
+      .catch(() => {});
+  }, []);
 
   const [form, setForm] = useState({
     clientName: "",
@@ -37,6 +45,7 @@ export default function NewInvoice() {
         jobTitle: form.jobTitle,
         amount: Number(form.amount),
         currency: form.currency,
+        brief: form.brief,
       });
       router.push(`/invoice/${invoice.id}`);
     } catch {
@@ -62,11 +71,30 @@ export default function NewInvoice() {
               </label>
               <input
                 required
+                list="known-clients"
                 value={form.clientName}
-                onChange={(e) => update("clientName", e.target.value)}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  const known = knownClients.find((c) => c.name === name);
+                  if (known?.email && !form.clientEmail) {
+                    setForm((f) => ({ ...f, clientName: name, clientEmail: known.email ?? "" }));
+                  } else {
+                    update("clientName", name);
+                  }
+                }}
                 placeholder="Marcus Webb"
                 className="w-full rounded-md bg-ink-2 border border-white/10 px-3 py-2.5 text-ivory placeholder:text-muted/60 focus:outline-none focus:border-chase"
               />
+              <datalist id="known-clients">
+                {knownClients.map((c) => (
+                  <option key={c.name} value={c.name}>{c.email ?? ""}</option>
+                ))}
+              </datalist>
+              {knownClients.length > 0 && (
+                <p className="text-[11px] text-muted mt-1">
+                  Khlasni knows {knownClients.length} of your clients — start typing to pick one.
+                </p>
+              )}
             </div>
 
             <div>
