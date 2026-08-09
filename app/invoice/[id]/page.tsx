@@ -21,11 +21,10 @@ export default function InvoiceDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { getInvoice, chase, markPaid } = useStore();
+  const { getInvoice, chase } = useStore();
   const invoice = getInvoice(id);
   const [copied, setCopied] = useState(false);
   const [chasing, setChasing] = useState(false);
-  const [paying, setPaying] = useState(false);
 
   if (!invoice) {
     return (
@@ -55,14 +54,6 @@ export default function InvoiceDetail({
       chase(invoice!.id);
       setChasing(false);
     }, 700);
-  }
-
-  function handlePaid() {
-    setPaying(true);
-    setTimeout(() => {
-      markPaid(invoice!.id);
-      setPaying(false);
-    }, 900);
   }
 
   const isPaid = invoice.status === "paid";
@@ -127,30 +118,14 @@ export default function InvoiceDetail({
           </div>
 
           {!isPaid && (
-            <div className="mt-6 rounded-lg border border-white/10 bg-ink-2 px-5 py-4 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium">Play the client</p>
-                <p className="text-xs text-muted mt-0.5">
-                  Simulate what happens when the agent nudges, or when the
-                  client actually pays.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleChase}
-                  disabled={chasing}
-                  className="text-sm px-4 py-2 rounded-full border border-white/15 hover:border-white/35 transition disabled:opacity-60"
-                >
-                  {chasing ? "Nudging…" : "Chase client now"}
-                </button>
-                <button
-                  onClick={handlePaid}
-                  disabled={paying}
-                  className="text-sm px-4 py-2 rounded-full bg-settled text-ink font-medium hover:brightness-110 transition disabled:opacity-60"
-                >
-                  {paying ? "Settling…" : "Simulate: client paid"}
-                </button>
-              </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={handleChase}
+                disabled={chasing}
+                className="text-sm px-4 py-2 rounded-full border border-white/15 text-muted hover:border-white/35 hover:text-ivory transition disabled:opacity-60"
+              >
+                {chasing ? "Sending follow-up…" : "Send follow-up now"}
+              </button>
             </div>
           )}
 
