@@ -57,6 +57,10 @@ export default function Pitch() {
               <br />
               <span className="text-chase">Getting paid is the job.</span>
             </h2>
+            <p className="mt-6 text-lg text-muted max-w-3xl">
+              And it hurts both sides: clients who <em className="text-ivory not-italic font-medium">want</em> to
+              pay face wires, SWIFT fees and forms — so paying you becomes a chore they postpone.
+            </p>
             <div className="mt-14 grid grid-cols-3 gap-10">
               <div>
                 <p className="font-display text-6xl text-gold">0</p>
